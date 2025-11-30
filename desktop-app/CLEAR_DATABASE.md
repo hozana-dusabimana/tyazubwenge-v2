@@ -127,3 +127,4 @@ You can use a SQLite database browser tool like:
 - ✅ All stock inventory
 - ❌ Everything else - **PRESERVED**
 
+

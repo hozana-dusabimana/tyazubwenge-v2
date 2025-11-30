@@ -4,6 +4,11 @@ requireLogin();
 if (!hasPermission('sales')) {
     redirect('index.php');
 }
+
+// Load customers for dropdown
+require_once 'classes/Customer.php';
+$customer = new Customer();
+$customers = $customer->getAll(1, 1000, ''); // Get all customers (limit 1000)
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,6 +71,14 @@ if (!hasPermission('sales')) {
                     <label class="form-label">Customer</label>
                     <select class="form-select" id="cartCustomer">
                         <option value="">Walk-in Customer</option>
+                        <?php foreach ($customers as $cust): ?>
+                            <option value="<?php echo htmlspecialchars($cust['id']); ?>">
+                                <?php echo htmlspecialchars($cust['name']); ?>
+                                <?php if (!empty($cust['phone'])): ?>
+                                    - <?php echo htmlspecialchars($cust['phone']); ?>
+                                <?php endif; ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="mb-3">

@@ -117,7 +117,7 @@ class _POSScreenState extends State<POSScreen> {
         tax: _tax,
         finalAmount: _total,
         paymentMethod: 'cash',
-        paymentStatus: 'completed',
+        paymentStatus: 'paid',
         saleType: 'retail',
         items: _cart.map((item) => SaleItem(
           saleId: 0, // Will be set after insert

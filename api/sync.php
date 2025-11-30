@@ -243,8 +243,21 @@ switch ($method) {
                             if (isset($record['subtotal'])) {
                                 $record['total_amount'] = $record['subtotal'];
                             }
+                            // Map payment_status to valid ENUM values: 'paid', 'pending', 'partial'
                             if (!isset($record['payment_status'])) {
-                                $record['payment_status'] = 'completed';
+                                $record['payment_status'] = 'paid';
+                            } else {
+                                // Normalize payment_status value
+                                $paymentStatus = strtolower(trim($record['payment_status']));
+                                // Map 'completed' to 'paid' (common in desktop apps)
+                                if ($paymentStatus === 'completed' || $paymentStatus === 'complete') {
+                                    $paymentStatus = 'paid';
+                                }
+                                // Ensure it's one of the valid ENUM values
+                                if (!in_array($paymentStatus, ['paid', 'pending', 'partial'])) {
+                                    $paymentStatus = 'paid'; // Default to 'paid' if invalid
+                                }
+                                $record['payment_status'] = $paymentStatus;
                             }
                             if (!isset($record['sale_type'])) {
                                 $record['sale_type'] = 'retail';

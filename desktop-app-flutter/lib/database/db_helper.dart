@@ -140,7 +140,7 @@ class DatabaseHelper {
         tax REAL DEFAULT 0,
         final_amount REAL,
         payment_method TEXT,
-        payment_status TEXT DEFAULT 'completed',
+        payment_status TEXT DEFAULT 'paid',
         sale_type TEXT DEFAULT 'retail',
         notes TEXT,
         sync_status TEXT DEFAULT 'pending',

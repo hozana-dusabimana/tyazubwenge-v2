@@ -5,9 +5,9 @@ let products = [];
 async function loadProducts() {
     const grid = document.getElementById('productsGrid');
     showLoading(grid);
-    
+
     const result = await apiCall('products.php?limit=100');
-    
+
     if (result.success) {
         products = result.data.filter(p => p.status === 'active');
         displayProducts(products);
@@ -16,12 +16,12 @@ async function loadProducts() {
 
 function displayProducts(productsList) {
     const grid = document.getElementById('productsGrid');
-    
+
     if (productsList.length === 0) {
         grid.innerHTML = '<div class="col-12 text-center text-muted">No products available</div>';
         return;
     }
-    
+
     grid.innerHTML = productsList.map(product => `
         <div class="col-md-3 mb-3">
             <div class="card product-card" onclick="addToCart(${product.id})">
@@ -41,19 +41,19 @@ function displayProducts(productsList) {
 async function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
-    
+
     // Check stock
     const branchId = window.BRANCH_ID || 1;
     const stockResult = await apiCall(`stock.php?product_id=${productId}&branch_id=${branchId}`);
     const availableStock = stockResult.success && stockResult.data ? parseFloat(stockResult.data.quantity) : 0;
-    
+
     if (availableStock <= 0) {
         showAlert('Product out of stock', 'warning');
         return;
     }
-    
+
     const existingItem = cart.find(item => item.product_id === productId);
-    
+
     if (existingItem) {
         if (existingItem.quantity + 1 > availableStock) {
             showAlert('Insufficient stock', 'warning');
@@ -62,10 +62,10 @@ async function addToCart(productId) {
         existingItem.quantity += 1;
         existingItem.subtotal = existingItem.quantity * existingItem.unit_price;
     } else {
-        const price = document.getElementById('saleType').value === 'wholesale' 
-            ? product.wholesale_price 
+        const price = document.getElementById('saleType').value === 'wholesale'
+            ? product.wholesale_price
             : product.retail_price;
-        
+
         cart.push({
             product_id: productId,
             product_name: product.name,
@@ -77,7 +77,7 @@ async function addToCart(productId) {
             discount: 0
         });
     }
-    
+
     updateCartDisplay();
 }
 
@@ -89,12 +89,12 @@ function removeFromCart(index) {
 function updateCartQuantity(index, change) {
     const item = cart[index];
     const newQuantity = item.quantity + change;
-    
+
     if (newQuantity <= 0) {
         removeFromCart(index);
         return;
     }
-    
+
     item.quantity = newQuantity;
     item.subtotal = item.quantity * item.unit_price;
     updateCartDisplay();
@@ -102,14 +102,14 @@ function updateCartQuantity(index, change) {
 
 function updateCartDisplay() {
     const cartItemsDiv = document.getElementById('cartItems');
-    
+
     if (cart.length === 0) {
         cartItemsDiv.innerHTML = '<p class="text-muted text-center">Cart is empty</p>';
         document.getElementById('cartSubtotal').textContent = '0.00';
         document.getElementById('cartTotal').textContent = '0.00';
         return;
     }
-    
+
     cartItemsDiv.innerHTML = cart.map((item, index) => `
         <div class="cart-item">
             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -135,7 +135,7 @@ function updateCartDisplay() {
             </div>
         </div>
     `).join('');
-    
+
     updateCartTotal();
 }
 
@@ -143,12 +143,12 @@ function updateCartTotal() {
     const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
     const discountPercent = parseFloat(document.getElementById('cartDiscount').value) || 0;
     const taxPercent = parseFloat(document.getElementById('cartTax').value) || 0;
-    
+
     const discount = subtotal * (discountPercent / 100);
     const afterDiscount = subtotal - discount;
     const tax = afterDiscount * (taxPercent / 100);
     const total = afterDiscount + tax;
-    
+
     document.getElementById('cartSubtotal').textContent = formatCurrency(subtotal);
     document.getElementById('cartTotal').textContent = formatCurrency(total);
 }
@@ -158,7 +158,7 @@ async function processSale() {
         showAlert('Cart is empty', 'warning');
         return;
     }
-    
+
     const saleData = {
         customer_id: document.getElementById('cartCustomer').value || null,
         branch_id: window.BRANCH_ID || 1,
@@ -178,14 +178,14 @@ async function processSale() {
         sale_type: document.getElementById('saleType').value,
         notes: ''
     };
-    
+
     const discountAmount = saleData.total_amount * (saleData.discount / 100);
     const afterDiscount = saleData.total_amount - discountAmount;
     const taxAmount = afterDiscount * (saleData.tax / 100);
     saleData.final_amount = afterDiscount + taxAmount;
-    
+
     const result = await apiCall('sales.php', 'POST', saleData);
-    
+
     if (result.success) {
         showAlert('Sale completed successfully!', 'success');
         const invoiceId = result.sale_id;
@@ -212,9 +212,9 @@ async function searchProduct() {
         loadProducts();
         return;
     }
-    
+
     const result = await apiCall(`search.php?term=${encodeURIComponent(searchTerm)}`);
-    
+
     if (result.success && result.data) {
         displayProducts([result.data]);
         document.getElementById('barcodeInput').value = '';
@@ -242,7 +242,52 @@ document.getElementById('barcodeInput').addEventListener('keypress', (e) => {
     }
 });
 
+// Load customers
+async function loadCustomers() {
+    // Wait a bit to ensure DOM is ready
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const customerSelect = document.getElementById('cartCustomer');
+    if (!customerSelect) {
+        console.error('Customer select element not found');
+        // Try again after a short delay
+        setTimeout(loadCustomers, 500);
+        return;
+    }
+
+    try {
+        console.log('Loading customers...');
+        const result = await apiCall('customers.php?limit=1000');
+        console.log('Customers API response:', result);
+
+        if (result && result.success && result.data) {
+            const customers = Array.isArray(result.data) ? result.data : [];
+
+            if (customers.length > 0) {
+                // Clear existing options except "Walk-in Customer"
+                customerSelect.innerHTML = '<option value="">Walk-in Customer</option>';
+
+                // Add all customers
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer.id;
+                    option.textContent = `${customer.name || 'Unknown'}${customer.phone ? ' - ' + customer.phone : ''}`;
+                    customerSelect.appendChild(option);
+                });
+                console.log(`Loaded ${customers.length} customers`);
+            } else {
+                console.warn('No customers found in response');
+            }
+        } else {
+            console.warn('Invalid API response:', result);
+        }
+    } catch (error) {
+        console.error('Error loading customers:', error);
+    }
+}
+
 // Initial load
 loadProducts();
+loadCustomers();
 updateCartDisplay();
 

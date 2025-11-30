@@ -32,7 +32,7 @@ class Sale {
     this.tax = 0,
     this.finalAmount,
     this.paymentMethod,
-    this.paymentStatus = 'completed',
+    this.paymentStatus = 'paid',
     this.saleType = 'retail',
     this.notes,
     this.syncStatus = 'pending',
@@ -78,7 +78,7 @@ class Sale {
       tax: (map['tax'] as num?)?.toDouble() ?? 0,
       finalAmount: (map['final_amount'] as num?)?.toDouble(),
       paymentMethod: map['payment_method'] as String?,
-      paymentStatus: map['payment_status'] as String? ?? 'completed',
+      paymentStatus: map['payment_status'] as String? ?? 'paid',
       saleType: map['sale_type'] as String? ?? 'retail',
       notes: map['notes'] as String?,
       syncStatus: map['sync_status'] as String? ?? 'pending',
@@ -135,4 +135,5 @@ class SaleItem {
     );
   }
 }
+
 

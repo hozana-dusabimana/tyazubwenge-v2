@@ -65,11 +65,24 @@ class _MainScreenState extends State<MainScreen> {
 
     try {
       await syncService.checkConnection();
-      if (syncService.isOnline && !hasData) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Downloading initial data...')),
-          );
+      if (syncService.isOnline) {
+        // Always download updates, not just on first run
+        if (!hasData) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Downloading initial data...')),
+            );
+          }
+        } else {
+          // Silently check for updates when data exists
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Checking for updates...'),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          }
         }
 
         final result = await syncService.downloadUpdates();
@@ -81,17 +94,28 @@ class _MainScreenState extends State<MainScreen> {
             final stockCount = (data['stock'] as List?)?.length ?? 0;
             final customerCount = (data['customers'] as List?)?.length ?? 0;
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                    'Data downloaded! Products: $productCount, Stock: $stockCount, Customers: $customerCount'),
-                duration: const Duration(seconds: 3),
-              ),
-            );
-
-            if (_selectedIndex == 3) {
-              setState(() {});
+            if (hasData) {
+              // Show update notification
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Data updated! Products: $productCount, Stock: $stockCount, Customers: $customerCount'),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            } else {
+              // Show initial download notification
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Data downloaded! Products: $productCount, Stock: $stockCount, Customers: $customerCount'),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
             }
+
+            // Refresh current screen if needed
+            setState(() {});
           }
         }
       }

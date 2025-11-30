@@ -68,3 +68,4 @@ If the installer continues to fail, you can run the app directly from source:
 
 This will launch the app without installation.
 
+
