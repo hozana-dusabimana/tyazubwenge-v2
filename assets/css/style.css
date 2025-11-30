@@ -1,0 +1,434 @@
+/* Tyazubwenge Management System Styles */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.login-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+}
+
+/* Top Bar Styles */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #0d6efd;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.topbar-content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 20px;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.topbar-title {
+    margin: 0;
+    margin-left: 15px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.topbar-user {
+    margin-left: auto;
+}
+
+.topbar-user .dropdown-toggle {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.topbar-user .dropdown-toggle:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 60px);
+    background: #fff;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-brand {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.sidebar-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.3s;
+    display: none;
+}
+
+.sidebar-close:hover {
+    background: #f8f9fa;
+}
+
+.sidebar-nav {
+    padding: 10px 0;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin: 2px 0;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.menu-link:hover {
+    background: #f8f9fa;
+    color: #0d6efd;
+    border-left-color: #0d6efd;
+}
+
+.menu-link.active {
+    background: #e7f1ff;
+    color: #0d6efd;
+    border-left-color: #0d6efd;
+    font-weight: 600;
+}
+
+.menu-link i {
+    font-size: 1.2rem;
+    width: 24px;
+    margin-right: 12px;
+}
+
+.menu-link span {
+    flex: 1;
+}
+
+/* Sidebar Overlay (Mobile) */
+.sidebar-overlay {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: 260px;
+    margin-top: 60px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    min-height: calc(100vh - 60px);
+}
+
+.main-content.sidebar-collapsed {
+    margin-left: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .sidebar-close {
+        display: block;
+    }
+    
+    .topbar-title {
+        font-size: 1rem;
+    }
+}
+
+.table-responsive {
+    border-radius: 8px;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.form-control, .form-select {
+    border-radius: 6px;
+}
+
+/* Invoice Print Styles */
+@media print {
+    body {
+        background: white;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    .invoice-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 10px;
+    }
+    
+    /* Thermal printer support (58mm, 80mm) */
+    @page {
+        size: auto;
+        margin: 0;
+    }
+    
+    .invoice-thermal {
+        width: 58mm;
+        font-size: 10px;
+    }
+    
+    .invoice-thermal-80 {
+        width: 80mm;
+        font-size: 11px;
+    }
+    
+    /* Standard A4 */
+    .invoice-a4 {
+        width: 210mm;
+        font-size: 12px;
+    }
+}
+
+.invoice-container {
+    background: white;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.invoice-header {
+    border-bottom: 2px solid #000;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.invoice-items {
+    margin: 20px 0;
+}
+
+.invoice-items table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoice-items th,
+.invoice-items td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.invoice-totals {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.invoice-footer {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* POS Styles */
+.pos-container {
+    display: flex;
+    height: calc(100vh - 100px);
+}
+
+.pos-left {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.pos-right {
+    width: 400px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-left: 1px solid #dee2e6;
+    overflow-y: auto;
+}
+
+.cart-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.product-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Loading Spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 20px;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+}
+
+/* Badges */
+.badge {
+    padding: 0.4em 0.6em;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pos-container {
+        flex-direction: column;
+    }
+    
+    .pos-right {
+        width: 100%;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+

@@ -1,0 +1,72 @@
+{
+    "name": "tyazubwenge-desktop",
+    "version": "1.0.0",
+    "description": "Tyazubwenge Training Center - Desktop Application",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder",
+        "build:win": "electron-builder --win",
+        "build:mac": "electron-builder --mac",
+        "build:linux": "electron-builder --linux",
+        "postinstall": "electron-rebuild -f -w better-sqlite3"
+    },
+    "keywords": [
+        "tyazubwenge",
+        "pos",
+        "inventory",
+        "desktop"
+    ],
+    "author": "Lanari Tech Ltd",
+    "license": "MIT",
+    "devDependencies": {
+        "electron": "^27.0.0",
+        "electron-builder": "^24.6.4",
+        "electron-rebuild": "^3.2.9"
+    },
+    "dependencies": {
+        "axios": "^1.6.0",
+        "better-sqlite3": "^12.5.0"
+    },
+    "build": {
+        "appId": "com.lanari.tyazubwenge",
+        "productName": "Tyazubwenge Desktop",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "**/*",
+            "!node_modules/**/*",
+            "node_modules/better-sqlite3/**/*",
+            "node_modules/axios/**/*"
+        ],
+        "asarUnpack": [
+            "node_modules/better-sqlite3/**/*"
+        ],
+        "win": {
+            "target": [
+                {
+                    "target": "portable",
+                    "arch": [
+                        "x64"
+                    ]
+                },
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "requestedExecutionLevel": "asInvoker"
+        },
+        "mac": {
+            "target": "dmg",
+            "icon": "assets/icon.icns"
+        },
+        "linux": {
+            "target": "AppImage",
+            "icon": "assets/icon.png"
+        }
+    }
+}

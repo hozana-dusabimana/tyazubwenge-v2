@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+*.db
+*.db-shm
+*.db-wal
+.env
+.vscode/
+.idea/
+desktop-app/dist/

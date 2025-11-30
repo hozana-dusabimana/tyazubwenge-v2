@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Browser Tests - Tyazubwenge Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .test-container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h1 { color: #0d6efd; }
+        .api-test { margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .api-test h3 { margin-top: 0; }
+        .endpoint { font-family: monospace; background: #e9ecef; padding: 5px 10px; border-radius: 3px; }
+        .response { margin-top: 10px; padding: 10px; background: white; border-left: 4px solid #0d6efd; }
+        .response.success { border-left-color: #28a745; }
+        .response.error { border-left-color: #dc3545; }
+        .response.loading { border-left-color: #ffc107; }
+        pre { margin: 5px 0; white-space: pre-wrap; font-size: 0.9em; }
+        .btn { padding: 10px 20px; background: #0d6efd; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0b5ed7; }
+        .summary { margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔌 API Browser Tests</h1>
+        <p>Note: These tests require you to be logged in. Please login first at <a href="login.php">login.php</a></p>
+        <button class="btn" onclick="runAllTests()">Run All Tests</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'api/';
+        let testCount = 0;
+        let passCount = 0;
+        let failCount = 0;
+
+        async function testAPI(name, endpoint, method = 'GET', data = null) {
+            testCount++;
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'api-test';
+            resultDiv.innerHTML = `
+                <h3>${name}</h3>
+                <div class="endpoint">${method}: ${endpoint}</div>
+                <div class="response loading">Testing...</div>
+            `;
+            document.getElementById('results').appendChild(resultDiv);
+            const responseDiv = resultDiv.querySelector('.response');
+
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                if (data && (method === 'POST' || method === 'PUT')) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(API_BASE + endpoint, options);
+                const responseData = await response.json();
+                
+                const isSuccess = response.ok && responseData.success !== false;
+                
+                responseDiv.className = 'response ' + (isSuccess ? 'success' : 'error');
+                responseDiv.innerHTML = `
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Response:</strong>
+                    <pre>${JSON.stringify(responseData, null, 2)}</pre>
+                `;
+
+                if (isSuccess) passCount++;
+                else failCount++;
+            } catch (error) {
+                responseDiv.className = 'response error';
+                responseDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                failCount++;
+            }
+        }
+
+        async function runAllTests() {
+            document.getElementById('results').innerHTML = '';
+            testCount = 0;
+            passCount = 0;
+            failCount = 0;
+
+            // Products API
+            await testAPI("Get Products", "products.php?page=1&limit=10");
+            await testAPI("Get Product by ID", "products.php?id=1");
+            
+            // Stock API
+            await testAPI("Get Stock", "stock.php?page=1&limit=10");
+            await testAPI("Get Low Stock", "stock.php?type=low_stock");
+            await testAPI("Get Near Expiry", "stock.php?type=near_expiry");
+            
+            // Customers API
+            await testAPI("Get Customers", "customers.php?page=1&limit=10");
+            await testAPI("Get Customer by ID", "customers.php?id=1");
+            
+            // Sales API
+            await testAPI("Get Sales", "sales.php?page=1&limit=10");
+            
+            // Reports API
+            await testAPI("Sales Report", "reports.php?type=sales");
+            await testAPI("Top Products", "reports.php?type=top_products&limit=10");
+            await testAPI("Stock Valuation", "reports.php?type=stock_valuation");
+            await testAPI("Profit Loss", "reports.php?type=profit_loss");
+            await testAPI("Custom Report - Sales by Customer", "reports.php?type=custom&custom_type=sales_by_customer");
+            
+            // Search API
+            await testAPI("Search Products", "search.php?term=test");
+            
+            // Categories API
+            await testAPI("Get Categories", "categories.php");
+            
+            // Brands API
+            await testAPI("Get Brands", "brands.php");
+            
+            // Suppliers API
+            await testAPI("Get Suppliers", "suppliers.php?page=1&limit=10");
+
+            // Show summary
+            const summary = document.createElement('div');
+            summary.className = 'summary';
+            summary.innerHTML = `
+                <h2>Test Summary</h2>
+                <p><strong>Total Tests:</strong> ${testCount}</p>
+                <p style="color: #28a745;"><strong>Passed:</strong> ${passCount}</p>
+                <p style="color: #dc3545;"><strong>Failed:</strong> ${failCount}</p>
+                ${failCount === 0 ? '<p style="color: #28a745; font-weight: bold;">✅ All tests passed!</p>' : '<p style="color: #dc3545; font-weight: bold;">❌ Some tests failed. Check the results above.</p>'}
+            `;
+            document.getElementById('results').appendChild(summary);
+        }
+
+        // Auto-run on load (optional)
+        // window.onload = () => setTimeout(runAllTests, 1000);
+    </script>
+</body>
+</html>
+

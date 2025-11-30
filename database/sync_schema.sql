@@ -1,0 +1,60 @@
+-- Sync Support Tables for Desktop Application
+-- Run this migration to add offline sync capabilities
+
+USE tyazubwenge_db;
+
+-- Sync mappings table to track local_id to server_id mappings
+CREATE TABLE IF NOT EXISTS sync_mappings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    entity_type VARCHAR(50) NOT NULL,
+    local_id VARCHAR(100) NOT NULL,
+    server_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_mapping (entity_type, local_id),
+    INDEX idx_entity_type (entity_type),
+    INDEX idx_local_id (local_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Add local_id and ensure updated_at exists for sync tracking
+ALTER TABLE sales 
+ADD COLUMN IF NOT EXISTS local_id VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ADD INDEX IF NOT EXISTS idx_local_id (local_id);
+
+ALTER TABLE stock_inventory 
+ADD COLUMN IF NOT EXISTS local_id VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ADD INDEX IF NOT EXISTS idx_local_id (local_id);
+
+ALTER TABLE customers 
+ADD COLUMN IF NOT EXISTS local_id VARCHAR(100) NULL,
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ADD INDEX IF NOT EXISTS idx_local_id (local_id);
+
+ALTER TABLE products 
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE suppliers 
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE categories 
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE brands 
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- API tokens table for desktop app authentication
+CREATE TABLE IF NOT EXISTS api_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    device_name VARCHAR(255) NULL,
+    expires_at TIMESTAMP NOT NULL,
+    last_used_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
