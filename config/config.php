@@ -8,7 +8,8 @@ define('BASE_URL', 'http://localhost/tyazubwenge_v2/');
 define('SITE_NAME', 'Tyazubwenge Management System');
 
 // Timezone
-date_default_timezone_set('Africa/Musanze');
+date_default_timezone_set('Africa/Kigali');
+
 
 // Include database
 require_once __DIR__ . '/database.php';
